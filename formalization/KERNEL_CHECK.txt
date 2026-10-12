@@ -1,0 +1,71 @@
+Lean (version 4.19.0, x86_64-w64-windows-gnu, commit 6caaee842e94, Release)
+BUILD W01/Basic.lean
+'W01.positive_differences' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.forbidden_coefficients' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.packing_iff_avoids' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.shape_card' depends on axioms: [propext, Quot.sound]
+'W01.path_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.pathCount_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/Arithmetic.lean
+'W01.small_remainder_alternative' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.large_remainder_alternative' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.small_cross_product' depends on axioms: [propext, Quot.sound]
+'W01.large_cross_product' depends on axioms: [propext, Quot.sound]
+'W01.small_numerator_positive' depends on axioms: [propext, Quot.sound]
+'W01.swapped_division' depends on axioms: [propext, Quot.sound]
+'W01.small_local_real' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.large_local_real' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/Density.lean
+'W01.windowCount_eq_interval_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.symmetricRatio_eq_original' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.good_blocks_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.upperDensity_le_of_good_blocks' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/Equality.lean
+'W01.equality_parity_from_saturation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.equality_counts_from_saturation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.equality_parity_at_from_saturation' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/PathAverage.lean
+'W01.path_average_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.weighted_window_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.equality_path_saturation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.equality_parity' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/PeriodicDensity.lean
+'W01.windowCount_add_compl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.symmetricRatio_tendsto_of_constant_blocks' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.upperDensity_eq_of_constant_blocks' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/Lower.lean
+'W01.lower_relation_trivial' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lowerCenters_periodic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lower_representation_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lowerCenters_avoids' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lowerCenters_packing' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lowerCenters_packing_nat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lowerCenters_swapped_packing' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/LowerCount.lean
+'W01.lower_windowCount' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lower_swapped_windowCount' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lower_symmetricRatio_tendsto' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lower_upperDensity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lower_swapped_symmetricRatio_tendsto' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.lower_swapped_upperDensity' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/Zero.lean
+'W01.zeroCenters_packing_nat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.zeroCenters_windowCount' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.zeroCenters_density' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/Upper.lean
+'W01.equality_parity_at' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.small_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.large_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.fifth_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.packing_upper_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01/Main.lean
+W01.packingDensity_formula (a b : ℕ) (q r : ℤ) (ha : 0 < a) (hb : 0 < b) (hcop : a.Coprime b)
+  (hdiv : ↑a - ↑b = 5 * q + r) (hr0 : 0 ≤ r) (hr5 : r < 5) : W01.packingDensity a b = W01.targetDensity a b q r
+W01.packingDensity_formula_euclidean (a b : ℕ) (ha : 0 < a) (hb : 0 < b) (hcop : a.Coprime b) :
+  W01.packingDensity a b = W01.targetDensity a b ((↑a - ↑b) / 5) ((↑a - ↑b) % 5)
+'W01.packing_upper_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.exists_optimal_packing' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.packingDensity_formula' depends on axioms: [propext, Classical.choice, Quot.sound]
+'W01.packingDensity_formula_euclidean' depends on axioms: [propext, Classical.choice, Quot.sound]
+BUILD W01.lean
+BUILD_SUCCEEDED
