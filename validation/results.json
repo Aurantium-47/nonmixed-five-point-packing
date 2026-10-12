@@ -1,0 +1,211 @@
+{
+  "all_checks_passed": true,
+  "arithmetic": "arbitrary-precision integers; no floating point",
+  "construction_parameter_range": "1 <= a,b <= 64, gcd(a,b) = 1",
+  "equality_cases": 200,
+  "independent_sets": 102681,
+  "local_details": [
+    {
+      "a": 2,
+      "b": 1,
+      "equality_cases": 1,
+      "independent_sets": 10,
+      "interval_length": 8
+    },
+    {
+      "a": 3,
+      "b": 1,
+      "equality_cases": 0,
+      "independent_sets": 15,
+      "interval_length": 11
+    },
+    {
+      "a": 3,
+      "b": 2,
+      "equality_cases": 2,
+      "independent_sets": 35,
+      "interval_length": 13
+    },
+    {
+      "a": 4,
+      "b": 1,
+      "equality_cases": 0,
+      "independent_sets": 39,
+      "interval_length": 14
+    },
+    {
+      "a": 4,
+      "b": 2,
+      "equality_cases": 1,
+      "independent_sets": 100,
+      "interval_length": 16
+    },
+    {
+      "a": 4,
+      "b": 3,
+      "equality_cases": 4,
+      "independent_sets": 137,
+      "interval_length": 18
+    },
+    {
+      "a": 5,
+      "b": 1,
+      "equality_cases": 5,
+      "independent_sets": 92,
+      "interval_length": 17
+    },
+    {
+      "a": 5,
+      "b": 2,
+      "equality_cases": 0,
+      "independent_sets": 161,
+      "interval_length": 19
+    },
+    {
+      "a": 5,
+      "b": 3,
+      "equality_cases": 2,
+      "independent_sets": 295,
+      "interval_length": 21
+    },
+    {
+      "a": 5,
+      "b": 4,
+      "equality_cases": 8,
+      "independent_sets": 542,
+      "interval_length": 23
+    },
+    {
+      "a": 6,
+      "b": 1,
+      "equality_cases": 6,
+      "independent_sets": 194,
+      "interval_length": 20
+    },
+    {
+      "a": 6,
+      "b": 2,
+      "equality_cases": 0,
+      "independent_sets": 225,
+      "interval_length": 22
+    },
+    {
+      "a": 6,
+      "b": 3,
+      "equality_cases": 1,
+      "independent_sets": 1000,
+      "interval_length": 24
+    },
+    {
+      "a": 6,
+      "b": 4,
+      "equality_cases": 4,
+      "independent_sets": 1225,
+      "interval_length": 26
+    },
+    {
+      "a": 6,
+      "b": 5,
+      "equality_cases": 16,
+      "independent_sets": 2142,
+      "interval_length": 28
+    },
+    {
+      "a": 7,
+      "b": 1,
+      "equality_cases": 1,
+      "independent_sets": 409,
+      "interval_length": 23
+    },
+    {
+      "a": 7,
+      "b": 2,
+      "equality_cases": 7,
+      "independent_sets": 767,
+      "interval_length": 25
+    },
+    {
+      "a": 7,
+      "b": 3,
+      "equality_cases": 7,
+      "independent_sets": 1421,
+      "interval_length": 27
+    },
+    {
+      "a": 7,
+      "b": 4,
+      "equality_cases": 2,
+      "independent_sets": 2596,
+      "interval_length": 29
+    },
+    {
+      "a": 7,
+      "b": 5,
+      "equality_cases": 8,
+      "independent_sets": 4709,
+      "interval_length": 31
+    },
+    {
+      "a": 7,
+      "b": 6,
+      "equality_cases": 32,
+      "independent_sets": 8472,
+      "interval_length": 33
+    },
+    {
+      "a": 8,
+      "b": 1,
+      "equality_cases": 0,
+      "independent_sets": 888,
+      "interval_length": 26
+    },
+    {
+      "a": 8,
+      "b": 2,
+      "equality_cases": 0,
+      "independent_sets": 1521,
+      "interval_length": 28
+    },
+    {
+      "a": 8,
+      "b": 3,
+      "equality_cases": 8,
+      "independent_sets": 3073,
+      "interval_length": 30
+    },
+    {
+      "a": 8,
+      "b": 4,
+      "equality_cases": 1,
+      "independent_sets": 10000,
+      "interval_length": 32
+    },
+    {
+      "a": 8,
+      "b": 5,
+      "equality_cases": 4,
+      "independent_sets": 10326,
+      "interval_length": 34
+    },
+    {
+      "a": 8,
+      "b": 6,
+      "equality_cases": 16,
+      "independent_sets": 18769,
+      "interval_length": 36
+    },
+    {
+      "a": 8,
+      "b": 7,
+      "equality_cases": 64,
+      "independent_sets": 33518,
+      "interval_length": 38
+    }
+  ],
+  "local_parameter_pairs": 28,
+  "local_parameter_range": "1 <= b < a <= 8, no coprimality or origin condition",
+  "path_identity_pairs": 4096,
+  "path_parameter_range": "1 <= a,b <= 64, all ordered pairs",
+  "periodic_construction_pairs": 2519,
+  "scope": "finite checks only; the all-parameter theorem requires the written proof"
+}

@@ -1,0 +1,498 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[hidelinks]{hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\ind}{\mathbf 1}
+\newcommand{\packd}{d_{\mathrm p}}
+\newcommand{\ud}{\overline d}
+
+\title{The Packing Density of Five Integers\protect\\with Gaps \(a,a,b,b\)}
+\author{}
+\date{October 13, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For coprime positive integers \(a,b\), we determine the packing density of
+\(\{0,a,2a,2a+b,2a+2b\}\). The density is defined using the symmetric
+upper density of translation centers, with no periodicity assumption.
+The resulting formula is the \(k=m=2\) case of the conjecture following
+Theorem~2 of Natalchenko and Sagdeev. An average over six five-point paths
+gives a local counting inequality. Equality forces a parity condition,
+which supplies the rounding needed in two of the four nonzero residue
+classes. A bounded-length interval decomposition then proves the upper
+bound for every center set. The matching periodic constructions are due
+to Natalchenko and Sagdeev; their specialization is verified here in full.
+\end{abstract}
+
+\section{Statement and relation to the source problem}
+
+For integers \(u\le v\), write
+\[
+ [u,v)=\{z\in\Z:u\le z<v\},\qquad
+ [u,v]=\{z\in\Z:u\le z\le v\}.
+\]
+For a finite set \(S\subset\Z\), an \emph{\(S\)-packing center set} is
+a set \(A\subseteq\Z\) such that the translates \(x+S\), \(x\in A\),
+are pairwise disjoint. Put
+\begin{equation}\label{eq:density}
+ \ud(A)=\limsup_{N\to\infty}
+ \frac{|A\cap[-N,N]|}{2N+1},\qquad
+ \packd(S)=\sup\{\ud(A):A\text{ is an }S\text{-packing center set}\}.
+\end{equation}
+Here \(N\) ranges over the nonnegative integers. Thus density counts
+centers, not covered integers. The definition permits nonperiodic sets
+and does not require a density limit to exist.
+
+\begin{theorem}\label{thm:main}
+Let \(a,b\) be coprime positive integers, and let
+\[
+ S=\{0,a,2a,2a+b,2a+2b\}.
+\]
+Write the Euclidean division of \(a-b\) by \(5\) as
+\[
+ a-b=5q+r,\qquad q\in\Z,\quad 0\le r\le4.
+\]
+Then
+\begin{equation}\label{eq:formula}
+ \packd(S)=R(a,b):=
+ \begin{cases}
+ \dfrac15,&r=0,\\[4pt]
+ \dfrac{b+2q}{2a+3b},&r=1,2,\\[6pt]
+ \dfrac{a-2(q+1)}{3a+2b},&r=3,4.
+ \end{cases}
+\end{equation}
+Every \(S\)-packing center set has symmetric upper density at most
+\(R(a,b)\), and a periodic center set has density limit \(R(a,b)\).
+\end{theorem}
+
+Natalchenko and Sagdeev~\cite{NS} consider sets with \(k\) successive
+gaps of size \(a\), followed by \(m\) gaps of size \(b\). Their
+Theorem~2 supplies a lower bound for all positive \(k,m\), and the
+unnumbered conjecture immediately following that theorem asserts its
+sharpness. Equation~\eqref{eq:formula} is exactly the specialization
+\(k=m=2\). Their Theorem~3 proves sharpness when \(k=1\) or \(m=1\).
+The present theorem concerns only \(k=m=2\); it does not settle the
+general conjecture. It is also distinct from their numbered
+Conjecture~1, whose packing set has four elements.
+
+The lower bounds and the equality case \(r=0\) already occur in
+\cite[Theorem~2 and Section~2]{NS}. We include their specialized
+constructions to make the proof self-contained. The upper bound below
+uses an explicit path identity and its equality condition. No claim of
+publication priority is made.
+
+\section{Forbidden differences, symmetry, and the zero residue}
+
+Define the finite set of positive integers
+\begin{equation}\label{eq:M}
+ M=\{ia+jb:0\le i,j\le2,\ i+j>0\}.
+\end{equation}
+A set \(A\subseteq\Z\) is \emph{\(M\)-avoiding} if
+\(|x-y|\notin M\) whenever \(x,y\in A\) are distinct.
+All coefficient indices in~\eqref{eq:M} are integers; repeated
+numerical values are included only once.
+
+The positive differences of elements of \(S\) are exactly
+\[
+ \{a,2a,b,2b,a+b,a+2b,2a+b,2a+2b\}=M.
+\]
+Indeed, the differences from \(0\) give
+\(a,2a,2a+b,2a+2b\); those from \(a\) give
+\(a,a+b,a+2b\); those from \(2a\) give \(b,2b\); and the
+remaining difference is \(b\). Two distinct translates \(x+S\) and
+\(y+S\) meet precisely when \(x-y=s'-s\) for some distinct
+\(s,s'\in S\). Consequently, being an \(S\)-packing center set is
+equivalent to being \(M\)-avoiding.
+
+Exchanging \(a\) and \(b\) leaves \(M\) unchanged. For \(r\ne0\),
+the exchanged quotient and remainder are
+\begin{equation}\label{eq:swap}
+ q'=-q-1,\qquad r'=5-r.
+\end{equation}
+If \(r=1,2\), the exchanged third branch equals
+\[
+ \frac{b-2(q'+1)}{3b+2a}=\frac{b+2q}{2a+3b}.
+\]
+If \(r=3,4\), the exchanged second branch equals
+\[
+ \frac{a+2q'}{2b+3a}=\frac{a-2(q+1)}{3a+2b}.
+\]
+The zero branch is unchanged as well. Thus the target formula and the
+class of admissible center sets are both invariant under this exchange.
+
+The five elements of \(S\) are strictly increasing. If \(A\) is an
+\(S\)-packing center set, all translates with centers in \([-N,N]\)
+lie in \([-N,N+2a+2b]\). Their disjointness gives
+\begin{equation}\label{eq:volume}
+ 5|A\cap[-N,N]|\le2N+2a+2b+1.
+\end{equation}
+After division by \(2N+1\) and passage to the upper limit, this proves
+\(\ud(A)\le1/5\).
+
+If \(r=0\), then \(a\equiv b\equiv v\pmod5\) for some nonzero
+residue \(v\), since otherwise \(5\) would divide both \(a\) and
+\(b\). The residues of \(S\) are \(0,v,2v,3v,4v\), all distinct.
+It follows that \(5\Z\) is an \(S\)-packing center set: an equality
+\(5x+s=5y+s'\) first forces \(s=s'\) by residues and then forces
+\(x=y\). Its density is \(1/5\), proving the zero branch. The only
+coprime case with \(a=b\) is \(a=b=1\), which is included here.
+
+For the upper bounds in the nonzero branches, symmetry now permits us
+to assume \(a>b>0\). The next two lemmas do not require coprimality.
+
+\section{A path identity and its equality condition}
+
+Throughout this section, let \(a>b>0\), let \(A\) be \(M\)-avoiding,
+and set
+\begin{equation}\label{eq:windows}
+ h=a+b,\quad n_1=2h+b=2a+3b,\quad n_2=2h+a=3a+2b,
+ \qquad F_i=|A\cap[0,n_i)|\ (i=1,2).
+\end{equation}
+In particular, \(0<n_1<n_2\). Let \(W\) be the six words with two
+letters \(a\) and two letters \(b\). For
+\(w=(d_1,d_2,d_3,d_4)\in W\), define
+\[
+ p_0(w)=0,\qquad p_j(w)=\sum_{i=1}^j d_i\quad(1\le j\le4),
+ \qquad P_w=\{p_0(w),\ldots,p_4(w)\}.
+\]
+The partial sums are strictly increasing. The positive difference of
+any two is a sum of a nonempty consecutive part of the word, and hence
+belongs to \(M\). Therefore
+\begin{equation}\label{eq:path-clique}
+ |A\cap(t+P_w)|\le1\qquad(t\in\Z,\ w\in W).
+\end{equation}
+For a subset \(E\) of \(\Z\), write \(\ind_E\) for its indicator
+function on \(\Z\).
+
+\begin{lemma}[Path identity and local bound]\label{lem:path}
+The following identity holds pointwise on \(\Z\):
+\begin{equation}\label{eq:path-identity}
+ \sum_{w\in W}\sum_{t=0}^{d_4-1}\ind_{t+P_w}
+ =3\ind_{[0,n_1)}+3\ind_{[0,n_2)}.
+\end{equation}
+Consequently,
+\begin{equation}\label{eq:sum-bound}
+ F_1+F_2\le h.
+\end{equation}
+If equality holds in~\eqref{eq:sum-bound}, then
+\(|A\cap(t+P_w)|=1\) for every \(w\in W\) and every
+\(0\le t<d_4\).
+\end{lemma}
+
+\begin{proof}
+Since the partial sums are distinct, expanding the indicator of each
+path and summing over its translations gives
+\[
+ \sum_{w\in W}\sum_{t=0}^{d_4-1}\ind_{t+P_w}
+ =\sum_{j=0}^4\sum_{w\in W}\ind_{[p_j(w),p_j(w)+d_4)}.
+\]
+Fix \(j\in\{0,1,2,3\}\). Interchanging positions \(j+1\) and
+\(4\) is a bijection of \(W\). It leaves the first \(j\) letters
+unchanged and hence preserves \(p_j(w)\), while interchanging
+\(d_{j+1}\) and \(d_4\). Thus
+\[
+ \sum_{w\in W}\ind_{[p_j(w),p_j(w)+d_4)}
+ =\sum_{w\in W}\ind_{[p_j(w),p_j(w)+d_{j+1})}.
+\]
+For each fixed word, the four intervals on the right, as \(j\) varies
+from \(0\) to \(3\), partition \([0,2h)\). Their total contribution
+over the six words is \(6\ind_{[0,2h)}\). For \(j=4\), all partial
+sums equal \(2h\); three words end with \(a\) and three end with
+\(b\). The remaining contribution is
+\[
+ 3\ind_{[2h,2h+a)}+3\ind_{[2h,2h+b)}.
+\]
+Adding these contributions proves~\eqref{eq:path-identity}.
+
+Sum the identity over points of \(A\). All functions involved have
+finite support, so this is a finite sum even when \(A\) is infinite.
+There are \(3a+3b=3h\) indexed translated paths on the left. By
+\eqref{eq:path-clique}, each contributes at most one, whence
+\(3(F_1+F_2)\le3h\). If equality holds, these \(3h\) quantities,
+each either zero or one, must all be one. Possible overlaps between
+different indexed paths do not affect this argument.
+\end{proof}
+
+\begin{lemma}[Parity at equality]\label{lem:parity}
+If \(F_1+F_2=h\), then there is a nonnegative integer \(e\) such that
+\begin{equation}\label{eq:parity}
+ F_1=b+2e,\qquad F_2=a-2e.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Put \(x_z=\ind_A(z)\). The words \(abba\) and \(baba\) both end
+with \(a\). Lemma~\ref{lem:path} therefore shows that, for every
+\(0\le u<a\), each of the two sets
+\[
+ u+\{0,a,h,a+2b,2h\},\qquad
+ u+\{0,b,h,a+2b,2h\}
+\]
+contains exactly one point of \(A\). Subtracting their indicator sums
+yields \(x_{u+a}=x_{u+b}\). Summing over \(0\le u<a\), we obtain
+\[
+ |A\cap[a,2a)|=|A\cap[b,h)|.
+\]
+The endpoint order is \(b<a<h<2a\). Removing the common interval
+\([a,h)\) from this equality gives
+\begin{equation}\label{eq:equal-gaps}
+ |A\cap[b,a)|=|A\cap[h,2a)|=:e.
+\end{equation}
+
+The word \(aabb\) has path \(S\) and ends with \(b\). Hence every
+\(u+S\), \(0\le u<b\), contains exactly one point of \(A\).
+These \(b\) sets are pairwise disjoint: their five point layers, as
+\(u\) varies, are the disjoint intervals
+\[
+ [0,b),\quad [a,h),\quad [2a,2a+b),\quad
+ [2a+b,2a+2b),\quad [2a+2b,2a+3b).
+\]
+Their union is
+\([0,b)\mathbin{\dot\cup}[a,h)\mathbin{\dot\cup}[2a,n_1)\),
+and therefore contains exactly \(b\) points of \(A\). Its complement
+within \([0,n_1)\) consists of \([b,a)\) and \([h,2a)\). By
+\eqref{eq:equal-gaps}, this proves \(F_1=b+2e\). The equality
+\(F_1+F_2=a+b\) then gives \(F_2=a-2e\).
+\end{proof}
+
+Neither lemma assumes \(0\in A\). This will allow their use at every
+integer starting point.
+
+\section{The four nonzero residues and the global upper bound}
+
+Keep \(a>b>0\), and write \(a-b=5q+r\) with \(1\le r\le4\).
+Here \(q\ge0\).
+
+\begin{proposition}\label{prop:local}
+For every integer \(x\), at least one length
+\(\ell\in\{n_1,n_2\}\) satisfies
+\begin{equation}\label{eq:good-window}
+ |A\cap[x,x+\ell)|\le R(a,b)\ell.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+First take \(x=0\).
+
+If \(r=1\) or \(r=2\), we claim that
+\begin{equation}\label{eq:alternative12}
+ F_1\le b+2q\quad\text{or}\quad F_2\le b+3q.
+\end{equation}
+If both inequalities fail, integer-valuedness gives
+\[
+ F_1+F_2\ge(b+2q+1)+(b+3q+1)=h+2-r.
+\]
+For \(r=1\), this contradicts Lemma~\ref{lem:path}. For \(r=2\),
+Lemma~\ref{lem:path} forces equality throughout. In particular,
+\(F_1=b+2q+1\), whereas Lemma~\ref{lem:parity} requires
+\(F_1\equiv b\pmod2\). This is a contradiction, proving
+\eqref{eq:alternative12}. Set \(\rho=(b+2q)/n_1=R(a,b)\).
+Substitution of \(a=b+5q+r\) gives
+\begin{equation}\label{eq:cross12}
+ (b+2q)n_2-(b+3q)n_1=br>0.
+\end{equation}
+Thus \((b+3q)/n_2<\rho\), so either alternative
+in~\eqref{eq:alternative12} proves~\eqref{eq:good-window}.
+
+If \(r=3\) or \(r=4\), the required integer alternative is
+\begin{equation}\label{eq:alternative34}
+ F_1\le a-3(q+1)\quad\text{or}\quad F_2\le a-2(q+1).
+\end{equation}
+Failure of both would give
+\[
+ F_1+F_2\ge\bigl(a-3(q+1)+1\bigr)
+                +\bigl(a-2(q+1)+1\bigr)=h+r-3.
+\]
+For \(r=4\), this exceeds the bound in Lemma~\ref{lem:path}.
+For \(r=3\), equality is forced, and
+\[
+ F_1=a-3(q+1)+1=b+2q+1,
+\]
+contrary to Lemma~\ref{lem:parity}. This proves
+\eqref{eq:alternative34}. Now put
+\(\rho=(a-2(q+1))/n_2=R(a,b)\). Direct expansion gives
+\begin{equation}\label{eq:cross34}
+ \bigl(a-2(q+1)\bigr)n_1-
+ \bigl(a-3(q+1)\bigr)n_2=a(5-r)>0.
+\end{equation}
+It follows that \((a-3(q+1))/n_1<\rho\). Again either alternative
+proves~\eqref{eq:good-window} at the origin.
+
+For general \(x\), apply the result just obtained to
+\(A-x=\{z-x:z\in A\}\). Translation preserves all differences,
+so \(A-x\) is \(M\)-avoiding. Its count in \([0,\ell)\) is
+exactly the count of \(A\) in \([x,x+\ell)\).
+\end{proof}
+
+\begin{lemma}[Bounded-length interval decomposition]\label{lem:global}
+Let \(A\subseteq\Z\), let \(1\le u\le v\) be integers, and let
+\(\rho\ge0\). Suppose that for every integer \(x\), some
+\(\ell\in\{u,v\}\) satisfies
+\(|A\cap[x,x+\ell)|\le\rho\ell\).
+Then, for every nonnegative integer \(N\),
+\begin{equation}\label{eq:finite-global}
+ |A\cap[-N,N]|\le\rho(2N+1)+v.
+\end{equation}
+Consequently \(\ud(A)\le\rho\).
+\end{lemma}
+
+\begin{proof}
+Start at the left endpoint of \([-N,N+1)\). Whenever its unprocessed
+part has length at least \(v\), choose a good interval supplied by the
+hypothesis and continue at its right endpoint. Its length is positive
+and at most \(v\), so it remains within the unprocessed part and the
+procedure terminates. The selected intervals are disjoint. The final
+remainder has an integer length \(s\) with \(0\le s<v\). This
+description also applies when \(2N+1<v\), in which case no interval
+is selected.
+
+The selected intervals contain at most \(\rho(2N+1-s)\) points of
+\(A\); the remainder contains at most \(s\). Thus
+\[
+ |A\cap[-N,N]|\le\rho(2N+1-s)+s
+ =\rho(2N+1)+(1-\rho)s\le\rho(2N+1)+v,
+\]
+using \(\rho\ge0\) and \(s<v\). Divide by \(2N+1\) and take
+the upper limit. The constant \(v\) is fixed, and
+\(v/(2N+1)\to0\), proving the density bound.
+\end{proof}
+
+To apply the lemma, note that for \(r=1,2\) the numerator \(b+2q\)
+is positive; for \(r=3,4\),
+\(a-2(q+1)=b+3q+r-2>0\). Proposition~\ref{prop:local} and
+Lemma~\ref{lem:global}, with \(u=n_1\), \(v=n_2\), and
+\(\rho=R(a,b)\), therefore give
+\begin{equation}\label{eq:upper-all}
+ \ud(A)\le R(a,b).
+\end{equation}
+The argument holds for every \(M\)-avoiding set, including infinite
+nonperiodic sets, finite sets, and the empty set. Its error constant
+depends only on the fixed parameters. Taking the supremum over center
+sets proves the desired upper bound. Symmetry from
+Section~2 supplies the case \(a<b\), and the case \(r=0\) was
+already proved there.
+
+\section{Periodic constructions attaining the bound}
+
+We now verify the \(k=m=2\) specialization of the construction
+in~\cite[Section~2]{NS}. In this section \(a,b\) are again any
+coprime positive integers; no order is imposed on them, so the
+quotient \(q\) may be negative.
+
+Suppose first that \(r\in\{1,2\}\), and put
+\begin{equation}\label{eq:construction-data}
+ g=a-b,\qquad n=2a+3b,\qquad
+ c=b+2q=\frac{n-2r}{5}.
+\end{equation}
+The integer \(c\) is positive because \(n\ge5>2r\). Define
+\begin{equation}\label{eq:construction}
+ A_0=\{tg:0\le t<c\}+n\Z,
+\end{equation}
+where \(t\) is an integer. We will prove that the indicated residues
+are distinct modulo \(n\), and that \(A_0\) is \(M\)-avoiding.
+
+Consider an integer relation
+\begin{equation}\label{eq:relation}
+ tg=ia+jb+zn,\qquad |t|<c,\quad 0\le i,j\le2,\quad z\in\Z.
+\end{equation}
+Rearranging it yields
+\[
+ a(t-2z-i)=b(t+3z+j).
+\]
+Since \(\gcd(a,b)=1\), Euclid's divisibility lemma implies that
+\(a\) divides \(t+3z+j\). Writing this latter integer as \(ap\)
+and cancelling the positive factor \(a\), we obtain an integer
+\(p\) such that
+\[
+ t-2z-i=bp,\qquad t+3z+j=ap.
+\]
+Let \(u=z-qp\). Subtracting these equations and substituting
+\(a-b=5q+r\) gives the first equality below; the first equation
+above and \(c=b+2q\) give the second:
+\begin{equation}\label{eq:division-relation}
+ rp=5u+i+j,\qquad t=cp+2u+i.
+\end{equation}
+As \(0\le i+j\le4\), the first equality is Euclidean division by
+\(5\). Thus \(u=\lfloor rp/5\rfloor\), also when \(p<0\).
+
+If \(p>0\), then \(u\ge0\), so the second equality gives
+\(t\ge cp\ge c\), contradicting \(|t|<c\).
+If \(p<0\), then \(u\le-1\). Since \(i\le2\), we have
+\(2u+i\le0\), and hence \(t\le cp\le-c\), another
+contradiction. If \(p=0\), the first equality, together with
+\(0\le i+j\le4\), forces \(u=0\) and \(i=j=0\). The definitions
+then give \(z=0\) and \(t=0\). Therefore~\eqref{eq:relation} has
+only the trivial solution \(t=i=j=z=0\).
+
+If two of the residues in~\eqref{eq:construction} were equal modulo
+\(n\), the difference of their indices would supply a relation
+\eqref{eq:relation} with \(i=j=0\) and a nonzero \(t\) satisfying
+\(|t|<c\). This is impossible. If two points of \(A_0\) had
+positive difference \(ia+jb\in M\), their indices and period
+shifts would give~\eqref{eq:relation} with \(i+j>0\), also
+impossible. Negative forbidden differences are covered by reversing
+the two points. This proves avoidance for the whole periodic set,
+including points in different periods.
+
+There are exactly \(c\) occupied residue classes modulo \(n\).
+For any one residue class, its count in an interval of \(L\)
+consecutive integers differs from \(L/n\) by less than one. Summing
+over the \(c\) classes gives
+\[
+ \left||A_0\cap[-N,N]|-\frac{c}{n}(2N+1)\right|\le c.
+\]
+Its symmetric density limit is therefore \(c/n\), which is the
+second branch of~\eqref{eq:formula}. The argument has used no
+restriction on the sign of \(q\).
+
+If \(r\in\{3,4\}\), exchange \(a\) and \(b\). The new remainder
+\(r'=5-r\) belongs to \(\{1,2\}\), and the new quotient is
+\(q'=-q-1\). Applying the construction just proved gives an
+\(M\)-avoiding set of period \(2b+3a\) with density
+\[
+ \frac{a+2q'}{2b+3a}=
+ \frac{a-2(q+1)}{3a+2b}.
+\]
+The forbidden difference set is unchanged by the exchange, so this is
+a valid packing center set for the original \(S\). The zero branch
+is attained by \(5\Z\) as proved in Section~2. All lower bounds
+match~\eqref{eq:upper-all} and~\eqref{eq:volume}, completing the
+proof of Theorem~\ref{thm:main}.
+
+\section*{Computation and AI assistance}
+
+The proof is the finite combinatorial and arithmetic argument given
+above, followed by the explicit upper-limit estimate. It does not
+depend on checking finitely many parameter pairs or on a theorem
+asserting the existence of an optimal periodic set. Supporting exact
+computations distributed with this note check only their stated
+finite ranges. They are supplementary verification, not the argument
+for the unrestricted parameters. This note does not assert that a
+complete proof-assistant formalization has been obtained.
+
+This work was developed with AI assistance, including assistance with
+the mathematical argument, exposition, and supporting verification
+code.
+
+\begin{thebibliography}{9}
+\bibitem{NS}
+Alexander Natalchenko and Arsenii Sagdeev,
+\emph{Packing Density of Sets With Only Two Nonmixed Gaps},
+Journal of Graph Theory \textbf{110} (2025), no.~3, 263--271.
+\href{https://doi.org/10.1002/jgt.23269}{doi:10.1002/jgt.23269}.
+Version consulted: \href{https://arxiv.org/abs/2407.01101v2}
+{arXiv:2407.01101v2}, revised June~6, 2025.
+\end{thebibliography}
+
+\end{document}
