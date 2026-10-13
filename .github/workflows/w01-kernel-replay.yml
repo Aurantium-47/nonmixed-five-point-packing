@@ -1,0 +1,367 @@
+name: W01 Lean 4.19.0 fresh kernel replay
+
+on:
+  push:
+    branches: [codex/w01-kernel-replay]
+    paths:
+      - .github/workflows/w01-kernel-replay.yml
+      - verification/W01FinalAudit.lean
+      - verification/AxiomInventory.lean
+
+concurrency:
+  group: w01-kernel-replay
+  cancel-in-progress: false
+
+# AI-assisted verification workflow.
+permissions: {}
+
+jobs:
+  source-audit:
+    if: github.event.repository.private == false && github.repository == 'Aurantium-47/nonmixed-five-point-packing' && github.ref == 'refs/heads/codex/w01-kernel-replay' && github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      LEAN_NUM_THREADS: '1'
+      MATHLIB_NO_CACHE_ON_UPDATE: '1'
+      RUN_COMMIT: ${{ github.sha }}
+    steps:
+      - name: Fetch the fixed public source and Lean release
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'W01_JOB_STARTED_UNIX=%s\n' "$(date +%s)" >> "$GITHUB_ENV"
+          test ! -e public-source
+          git init public-source
+          git -C public-source remote add origin https://github.com/Aurantium-47/nonmixed-five-point-packing.git
+          git -C public-source fetch --depth 1 origin 2c771bb0ac22af8d50eced1da63f5e04202e62dc
+          git -C public-source checkout --detach FETCH_HEAD
+          test "$(git -C public-source rev-parse HEAD)" = 2c771bb0ac22af8d50eced1da63f5e04202e62dc
+          test "$(tr -d '\r\n' < public-source/formalization/lean-toolchain)" = leanprover/lean4:v4.19.0
+          python3 - <<'PY'
+          import hashlib, json, pathlib, shutil, subprocess
+          root = pathlib.Path('public-source')
+          mem = {line.split(':')[0]: int(line.split()[1]) * 1024 for line in pathlib.Path('/proc/meminfo').read_text().splitlines() if line.startswith(('MemTotal:', 'MemAvailable:', 'SwapTotal:', 'SwapFree:'))}
+          print('RUNNER_RESOURCES_BEFORE_SETUP', json.dumps(dict(mem, disk_free=shutil.disk_usage('.').free)), flush=True)
+          assert mem['MemTotal'] >= 14 * 1024**3 and mem['MemAvailable'] >= 12 * 1024**3, 'Insufficient available runner RAM'
+          assert shutil.disk_usage('.').free >= 10 * 1024**3, 'Insufficient free disk; do not prune the runner'
+          paths = subprocess.check_output(['git', '-C', str(root), 'ls-files'], text=True).splitlines()
+          hashes = {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in paths}
+          assert len(hashes) == 31
+          assert hashlib.sha256(json.dumps(hashes, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == 'a567f681466b84584a43fc9fe868249de2e1290bdc0482c36b7f266bb76ab2cd'
+          pathlib.Path('source-hashes.json').write_text(json.dumps(hashes, sort_keys=True))
+          print('FIXED_SOURCE_SHA256', json.dumps(hashes, sort_keys=True), flush=True)
+          PY
+          git -C public-source fetch --depth 2 origin "$RUN_COMMIT"
+          git -C public-source checkout --detach "$RUN_COMMIT"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('public-source')
+          current = os.environ['RUN_COMMIT']
+          parent = subprocess.check_output(['git', '-C', str(root), 'rev-list', '--parents', '-n', '1', current], text=True).split()
+          assert parent == [current, '2c771bb0ac22af8d50eced1da63f5e04202e62dc']
+          expected = {'.github/workflows/w01-kernel-replay.yml', 'verification/W01FinalAudit.lean', 'verification/AxiomInventory.lean'}
+          diff = subprocess.check_output(['git', '-C', str(root), 'diff', '--name-status', parent[1], current], text=True).splitlines()
+          assert set(diff) == {'A\t' + path for path in expected}, diff
+          original = json.loads(pathlib.Path('source-hashes.json').read_text())
+          assert all(hashlib.sha256((root / p).read_bytes()).hexdigest() == value for p, value in original.items())
+          actual = set(subprocess.check_output(['git', '-C', str(root), 'ls-files'], text=True).splitlines())
+          assert actual == set(original) | expected
+          for path, expected_sha in [('verification/W01FinalAudit.lean', '4b6952bd7bffbf0a7c8248f4e7daa5b19414e54fcff2e9b8c65d07fc21115750'), ('verification/AxiomInventory.lean', '69d932f85680e6973998d24357268013bb189b27137aacc3756a27dfa76a2abc')]:
+              assert hashlib.sha256((root / path).read_bytes()).hexdigest() == expected_sha
+          hashes = {path: hashlib.sha256((root / path).read_bytes()).hexdigest() for path in sorted(expected)}
+          pathlib.Path('payload-hashes.json').write_text(json.dumps(hashes, sort_keys=True))
+          print('WORKFLOW_COMMIT', current, 'PROOF_SOURCE_COMMIT', parent[1], flush=True)
+          print('PUBLIC_PAYLOAD_SHA256', json.dumps(hashes, sort_keys=True), flush=True)
+          PY
+          curl --fail --location https://github.com/leanprover/lean4/releases/download/v4.19.0/lean-4.19.0-linux.tar.zst --output lean-4.19.0-linux.tar.zst
+          sha256sum lean-4.19.0-linux.tar.zst
+          printf '%s\n' '6fe3ce97a58f44e2b3567d455b994eacec5bfe9ae7774f2a573444480ba813fe  lean-4.19.0-linux.tar.zst' | sha256sum --check
+          tar --zstd -xf lean-4.19.0-linux.tar.zst
+          "$PWD/lean-4.19.0-linux/bin/lean" --version
+          "$PWD/lean-4.19.0-linux/bin/lean" --version | grep -F '4.19.0'
+          "$PWD/lean-4.19.0-linux/bin/lean" --version | grep -F '6caaee842e94'
+          printf '%s\n' '92c3d35b5bfaa5e0fea413a775d504cf46cd95e1345df61c2274f76779e7e023  lean-4.19.0-linux/bin/lean' '5111aee5c9434ab05d4265606475ef22e8bda69aaf3a0657b61a7eec6e550bed  lean-4.19.0-linux/bin/lake' | sha256sum --check
+          printf '%s\n' "$PWD/lean-4.19.0-linux/bin" >> "$GITHUB_PATH"
+          printf 'LEAN_SYSROOT=%s\n' "$PWD/lean-4.19.0-linux" >> "$GITHUB_ENV"
+          free -h
+          df -h .
+
+      - name: Fetch exact dependency revisions without updating the manifest
+        working-directory: public-source/formalization
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          manifest = root / 'lake-manifest.json'
+          assert hashlib.sha256(manifest.read_bytes()).hexdigest() == '930d56820d26bc22587c64e42756dabd3ca855d5d885df7921598dfae775f651'
+          print('MANIFEST_SHA256', hashlib.sha256(manifest.read_bytes()).hexdigest())
+          packages = json.loads(manifest.read_text())['packages']
+          assert len(packages) == 9
+          assert next(p for p in packages if p['name'] == 'mathlib')['rev'] == 'c44e0c8ee63ca166450922a373c7409c5d26b00b'
+          for p in packages:
+              assert p['type'] == 'git' and p['url'].startswith('https://github.com/')
+              target = root / '.lake/packages' / p['name']
+              assert not target.exists()
+              target.mkdir(parents=True)
+              subprocess.run(['git', 'init', str(target)], check=True)
+              subprocess.run(['git', '-C', str(target), 'remote', 'add', 'origin', p['url']], check=True)
+              subprocess.run(['git', '-C', str(target), 'fetch', '--depth', '1', 'origin', p['rev']], check=True)
+              subprocess.run(['git', '-C', str(target), 'checkout', '--detach', 'FETCH_HEAD'], check=True)
+              actual = subprocess.check_output(['git', '-C', str(target), 'rev-parse', 'HEAD'], text=True).strip()
+              assert actual == p['rev']
+              print('DEPENDENCY', p['name'], actual)
+              if p['name'] == 'proofwidgets':
+                  subprocess.run(['git', '-C', str(target), 'fetch', '--depth', '1', 'origin',
+                                  'refs/tags/v0.0.57:refs/tags/v0.0.57'], check=True)
+                  release_commit = subprocess.check_output(
+                      ['git', '-C', str(target), 'rev-parse', 'v0.0.57^{commit}'], text=True).strip()
+                  assert release_commit == p['rev']
+                  release_tag = subprocess.check_output(
+                      ['git', '-C', str(target), 'describe', '--tags', '--exact-match', 'HEAD'], text=True).strip()
+                  assert release_tag == 'v0.0.57'
+                  print('RELEASE_TAG', p['name'], release_tag, release_commit)
+          # Keep all downloaded files: disable only the upstream cache helper's directory pruning.
+          helper = root / '.lake/packages/mathlib/Cache/Requests.lean'
+          text = helper.read_text()
+          for old in ['IO.FS.removeDirAll (buildDir / "lib")', 'IO.FS.removeDirAll (buildDir / "ir")']:
+              assert text.count(old) == 1
+              text = text.replace(old, 'pure ()')
+          helper.write_text(text)
+          assert hashlib.sha256(helper.read_bytes()).hexdigest() == '646fed31a48d85ed75746ec09d06c23f5abdaca455518b6760b0dcb2b10c47c0'
+          print('CACHE_HELPER_PATCH_SHA256', hashlib.sha256(helper.read_bytes()).hexdigest())
+          subprocess.run(['git', '-C', str(helper.parents[1]), 'diff', '--', 'Cache/Requests.lean'], check=True)
+          PY
+
+      - name: Fetch the fixed checker source without target dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e checker-source
+          git init checker-source
+          git -C checker-source remote add origin https://github.com/leanprover/lean4checker.git
+          git -C checker-source fetch --depth 1 origin e11f65c651edd58d68ba260015d2bfde5102cd7f
+          git -c core.autocrlf=false -C checker-source checkout --detach FETCH_HEAD
+          test "$(git -C checker-source rev-parse HEAD)" = e11f65c651edd58d68ba260015d2bfde5102cd7f
+          python3 - <<'PY'
+          import hashlib, json, pathlib, subprocess
+          root = pathlib.Path('checker-source')
+          assert (root / 'lean-toolchain').read_text().strip() == 'leanprover/lean4:v4.19.0'
+          assert json.loads((root / 'lake-manifest.json').read_text())['packages'] == []
+          paths = subprocess.check_output(['git', '-C', str(root), 'ls-files'], text=True).splitlines()
+          hashes = {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in paths}
+          assert len(hashes) == 21
+          assert hashlib.sha256(json.dumps(hashes, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == 'b2bc8dc5ed257133b48bcc0217238eb43de52343ad6b174eb0490bc69b881bc6'
+          pathlib.Path('checker-source-hashes.json').write_text(json.dumps(hashes, sort_keys=True))
+          print('CHECKER_COMMIT', 'e11f65c651edd58d68ba260015d2bfde5102cd7f', flush=True)
+          print('CHECKER_SOURCE_SHA256', json.dumps(hashes, sort_keys=True), flush=True)
+          PY
+
+      - name: Prepare W01 outputs, audit final types, and replay the full imported environment
+        working-directory: public-source/formalization
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re, shutil, signal, subprocess, time
+          root = pathlib.Path.cwd()
+          workspace = root.parent.parent
+          job_started = float(os.environ['W01_JOB_STARTED_UNIX'])
+          own = ['W01.Basic', 'W01.Arithmetic', 'W01.Density', 'W01.Equality', 'W01.PathAverage', 'W01.PeriodicDensity', 'W01.Lower', 'W01.LowerCount', 'W01.Zero', 'W01.Upper', 'W01.Main', 'W01']
+          expected_names = ['W01.packing_upper_bound', 'W01.exists_optimal_packing', 'W01.packingDensity_formula', 'W01.packingDensity_formula_euclidean']
+          output = root / 'fresh-audit'
+          assert not output.exists()
+          (output / 'lib/W01').mkdir(parents=True)
+          original = json.loads((workspace / 'source-hashes.json').read_text())
+          payload_hashes = json.loads((workspace / 'payload-hashes.json').read_text())
+          checker_hashes = json.loads((workspace / 'checker-source-hashes.json').read_text())
+          toolchain = pathlib.Path(os.environ['LEAN_SYSROOT'])
+          lean = str(toolchain / 'bin/lean')
+          lake = str(toolchain / 'bin/lake')
+          base_env = dict(os.environ, LEAN_NUM_THREADS='1', MATHLIB_CACHE_DIR=str(workspace / 'mathlib-cache'))
+          base_env.pop('LEAN_PATH', None)
+          env = dict(base_env)
+          flags = ['-j', '1', '-s', '131072']
+          print('FLAGS', flags, flush=True)
+          print('CLOUD_BUDGET', '10 GiB group RSS; 512 MiB group swap; 2 GiB system available floor; 12 GiB launch available; checker 1800 s; job 60 min; log-safe walltime guard 58 min; no retry', flush=True)
+          def available():
+              return int(re.search(r'^MemAvailable:\s+(\d+)', pathlib.Path('/proc/meminfo').read_text(), re.M)[1]) * 1024
+
+          def group_memory(group):
+              rss, swap = 0, 0
+              for directory in pathlib.Path('/proc').iterdir():
+                  if not directory.name.isdigit():
+                      continue
+                  try:
+                      stat = (directory / 'stat').read_text().rsplit(')', 1)[1].split()
+                      if int(stat[2]) != group:
+                          continue
+                      status = (directory / 'status').read_text()
+                      rss += int(re.search(r'^VmRSS:\s+(\d+)', status, re.M)[1]) * 1024 if 'VmRSS:' in status else 0
+                      swap += int(re.search(r'^VmSwap:\s+(\d+)', status, re.M)[1]) * 1024 if 'VmSwap:' in status else 0
+                  except (FileNotFoundError, ProcessLookupError):
+                      continue
+              return rss, swap
+
+          def sha(path):
+              h = hashlib.sha256()
+              with path.open('rb') as f:
+                  for data in iter(lambda: f.read(1024 * 1024), b''):
+                      h.update(data)
+              return h.hexdigest()
+
+          def stop_group(group):
+              try:
+                  os.killpg(group, signal.SIGKILL)
+              except ProcessLookupError:
+                  pass
+
+          def run(args, label, seconds=1200, cwd=None, command_env=None):
+              assert available() >= 12 * 1024**3, 'Available RAM preflight failed; no retry'
+              assert shutil.disk_usage(root).free >= 2 * 1024**3, 'Disk preflight failed'
+              log = output / (label + '.log')
+              assert not log.exists()
+              record = dict(label=label, command=args, working_directory=str(cwd or root), elapsed_seconds=0, max_sampled_group_rss_bytes=0,
+                            max_sampled_group_swap_bytes=0, minimum_system_available_bytes=available(), abort_reason=None)
+              print('COMMAND', args, flush=True)
+              started = time.monotonic()
+              with log.open('wb') as stream, (output / (label + '.memory.jsonl')).open('w') as samples:
+                  process = subprocess.Popen(args, cwd=cwd or root, env=command_env if command_env is not None else env, stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
+                  try:
+                      while process.poll() is None:
+                          rss, swap = group_memory(process.pid)
+                          free = available()
+                          elapsed = time.monotonic() - started
+                          record['max_sampled_group_rss_bytes'] = max(record['max_sampled_group_rss_bytes'], rss)
+                          record['max_sampled_group_swap_bytes'] = max(record['max_sampled_group_swap_bytes'], swap)
+                          record['minimum_system_available_bytes'] = min(record['minimum_system_available_bytes'], free)
+                          samples.write(json.dumps(dict(seconds=elapsed, group_rss=rss, group_swap=swap, available=free)) + '\n')
+                          samples.flush()
+                          if rss > 10 * 1024**3 or swap > 512 * 1024**2 or free < 2 * 1024**3 or elapsed > seconds or time.time() - job_started > 3480:
+                              record['abort_reason'] = 'resource_or_time_guard'
+                              print('GUARD_ABORT', label, json.dumps(dict(group_rss=rss, group_swap=swap, available=free, elapsed=elapsed, job_elapsed=time.time()-job_started)), flush=True)
+                              stop_group(process.pid)
+                              break
+                          time.sleep(0.5)
+                  finally:
+                      if process.poll() is None:
+                          stop_group(process.pid)
+                      record['exit_code'] = process.wait()
+                      record['elapsed_seconds'] = time.monotonic() - started
+              (output / (label + '.json')).write_text(json.dumps(record, sort_keys=True))
+              print(log.read_text(errors='replace'), flush=True)
+              print('RESOURCE_RESULT', json.dumps(record, sort_keys=True), flush=True)
+              print('LOG_SHA256', label, sha(log), flush=True)
+              print('MEMORY_LOG_SHA256', label, sha(output / (label + '.memory.jsonl')), flush=True)
+              print('EXIT', record['exit_code'], flush=True)
+              assert record['exit_code'] == 0 and record['abort_reason'] is None, 'Stopped; no automatic retry'
+              return log.read_text(errors='replace')
+
+
+          # Cache acquisition is monitored too; no external mathematical source rebuild.
+          run(['/usr/bin/time', '-v', lake, 'exe', 'cache', 'get'] + ['Mathlib.Algebra.Group.Int.Units', 'Mathlib.Analysis.SpecificLimits.Basic', 'Mathlib.Data.Finset.Card', 'Mathlib.Data.Int.Interval', 'Mathlib.Data.Set.Disjoint', 'Mathlib.RingTheory.Coprime.Lemmas', 'Mathlib.Tactic', 'Mathlib.Tactic.FinCases', 'Mathlib.Tactic.IntervalCases', 'Mathlib.Tactic.Linarith', 'Mathlib.Tactic.NormNum', 'Mathlib.Tactic.Ring', 'Mathlib.Topology.Algebra.Order.LiminfLimsup'], 'dependency-cache', 900, command_env=base_env)
+          subprocess.run(['git', 'diff', '--exit-code', '--', 'lake-manifest.json', 'lean-toolchain', 'lakefile.toml'], cwd=root, check=True)
+          for source in sorted((root / '.lake/packages/mathlib/Cache').glob('*.lean')):
+              print('CACHE_TOOL_SOURCE_SHA256', source.name, sha(source), flush=True)
+          for source in sorted((workspace / 'mathlib-cache').glob('*')):
+              if source.is_file() and source.name.startswith(('leantar-', 'curl-')):
+                  print('CACHE_DOWNLOADED_TOOL_SHA256', source.name, sha(source), flush=True)
+          cache_exe = root / '.lake/packages/mathlib/.lake/build/bin/cache'
+          assert cache_exe.is_file()
+          print('CACHE_EXECUTABLE_SHA256', sha(cache_exe), flush=True)
+          libraries = [output / 'lib']
+          for p in json.loads((root / 'lake-manifest.json').read_text())['packages']:
+              package = root / '.lake/packages' / p['name']
+              assert subprocess.check_output(['git', '-C', str(package), 'rev-parse', 'HEAD'], text=True).strip() == p['rev']
+              status = subprocess.check_output(['git', '-C', str(package), 'status', '--porcelain=v1', '--untracked-files=no'], text=True).strip()
+              assert not status or (p['name'] == 'mathlib' and status == 'M Cache/Requests.lean'), status
+              library = package / '.lake/build/lib/lean'
+              if library.is_dir():
+                  libraries.append(library)
+              else:
+                  assert p['name'] == 'Cli'
+          builtins = toolchain / 'lib/lean'
+          for library in libraries[1:] + [builtins]:
+              assert not (library / 'W01').exists() and not (library / 'W01.olean').exists()
+          env = dict(base_env, LEAN_PATH=os.pathsep.join(map(str, libraries)))
+          print('LEAN_PATH', env['LEAN_PATH'], flush=True)
+          for name in own:
+              source = root / (name.replace('.', '/') + '.lean')
+              target = output / 'lib' / (name.replace('.', '/') + '.olean')
+              run(['/usr/bin/time', '-v', lean] + flags + ['-o', str(target), str(source)], name)
+              assert target.is_file()
+              assert sha(source) == original['formalization/' + name.replace('.', '/') + '.lean']
+              print('SOURCE_SHA256', name, sha(source), 'OLEAN_SHA256', sha(target), flush=True)
+          probe = root.parent / 'verification/W01FinalAudit.lean'
+          assert sha(probe) == '4b6952bd7bffbf0a7c8248f4e7daa5b19414e54fcff2e9b8c65d07fc21115750'
+          resolved = run([lean, '--deps', str(probe)], 'actual-imports', 120, cwd=probe.parent)
+          deps = [pathlib.Path(s.strip()).resolve() for s in resolved.splitlines() if s.strip()]
+          for name in own:
+              assert deps.count((output / 'lib' / (name.replace('.', '/') + '.olean')).resolve()) == 1
+          for dep in deps:
+              assert dep.is_file()
+              assert dep.is_relative_to((output / 'lib').resolve()) or dep.is_relative_to(builtins.resolve()), dep
+              print('ACTUAL_IMPORT_SHA256', str(dep), sha(dep), flush=True)
+          recorded = set(deps)
+          for name in own:
+              source = root / (name.replace('.', '/') + '.lean')
+              text = run([lean, '--deps', str(source)], name + '.deps', 120)
+              for line in text.splitlines():
+                  if not line.strip():
+                      continue
+                  dep = pathlib.Path(line.strip()).resolve()
+                  assert any(dep.is_relative_to(p.resolve()) for p in libraries + [builtins]), dep
+                  if dep not in recorded:
+                      print('ACTUAL_IMPORT_SHA256', str(dep), sha(dep), flush=True)
+                      recorded.add(dep)
+          text = run(['/usr/bin/time', '-v', lean] + flags + ['-o', str(output / 'lib/W01FinalAudit.olean'), str(probe)], 'complete-types-axioms', cwd=probe.parent)
+          observed = {}
+          for name, axioms in re.findall(r"^'([^']+)' depends on axioms: \[([^\]]*)\]", text, re.M):
+              assert name not in observed
+              observed[name] = [a.strip() for a in axioms.split(',') if a.strip()]
+          for name in re.findall(r"^'([^']+)' does not depend on any axioms", text, re.M):
+              assert name not in observed
+              observed[name] = []
+          assert set(observed) == set(expected_names)
+          assert all(set(a) == {'propext', 'Classical.choice', 'Quot.sound'} for a in observed.values())
+          for name in expected_names:
+              assert len(re.findall(r'^@?' + re.escape(name) + r'(?:\s|\.{|\(|\{|\[|:)', text, re.M)) == 1, ('Missing or duplicate full signature', name)
+          print('FINAL_AXIOMS_JSON', json.dumps(observed, sort_keys=True), flush=True)
+          print('FINAL_PROBE_OLEAN_SHA256', sha(output / 'lib/W01FinalAudit.olean'), flush=True)
+
+          checker_root = workspace / 'checker-source'
+          for target in ['+Lean4Checker.Lean:o', '+Lean4Checker.Replay:o', '+Main:o', 'lean4checker']:
+              label = 'checker-build-' + target.replace('+', '').replace(':', '-')
+              run(['/usr/bin/time', '-v', lake, '--no-cache', 'build', target], label, 300, cwd=checker_root, command_env=base_env)
+          checker = checker_root / '.lake/build/bin/lean4checker'
+          assert checker.is_file()
+          assert all(sha(checker_root / path) == value for path, value in checker_hashes.items())
+          subprocess.run(['git', 'diff', '--exit-code', 'HEAD', '--'], cwd=checker_root, check=True)
+          print('CHECKER_BINARY_SHA256', sha(checker), flush=True)
+          print('REPLAY_SCOPE', 'All safe/nonpartial constants in imported W01.Main environment; same Lean kernel; axiom declarations accepted; no independent implementation.', flush=True)
+          run(['/usr/bin/time', '-v', str(checker), '--fresh', '--verbose', 'W01.Main'], 'replay-W01-Main-fresh', 1800)
+          print('FRESH_REPLAY_COMPLETED', 'W01.Main', 'exit=0', 'guard=none', flush=True)
+
+          # This separate original probe enumerates declared ambient axioms, not final theorem dependencies.
+          ambient = root.parent / 'verification/AxiomInventory.lean'
+          assert sha(ambient) == '69d932f85680e6973998d24357268013bb189b27137aacc3756a27dfa76a2abc'
+          print('AMBIENT_AXIOM_SCOPE', 'All axiom declarations in imported environment; separate from FINAL_AXIOMS_JSON.', flush=True)
+          ambient_text = run(['/usr/bin/time', '-v', lean] + flags + [str(ambient)], 'ambient-axiom-inventory', 120, cwd=ambient.parent)
+          assert 'AMBIENT_AXIOM ' in ambient_text
+          for name in expected_names:
+              assert len(re.findall(r"^'" + re.escape(name) + r"' depends on axioms: \[propext, Classical.choice, Quot.sound\]", ambient_text, re.M)) == 1
+          print('AMBIENT_INVENTORY_COMPLETED', 'exit=0', flush=True)
+          assert all(sha(root.parent / path) == value for path, value in original.items())
+          assert all(sha(root.parent / path) == value for path, value in payload_hashes.items())
+          subprocess.run(['git', 'diff', '--exit-code', 'HEAD', '--'], cwd=root.parent, check=True)
+          print('PASS: fixed W01 source prepared; four full final types/axioms and 12 fresh imports verified; W01.Main fresh same-kernel replay completed; ambient axiom enumeration completed.', flush=True)
+          print('NOT PERFORMED: external dependency source rebuild, toolchain bootstrap, independent kernel implementation, human semantic or priority review.', flush=True)
+          PY
+
+      - name: Final runner resources
+        if: always()
+        shell: bash
+        run: |
+          free -b
+          df -B1 .
